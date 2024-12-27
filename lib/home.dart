@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'weather.dart';
-
+import 'dart:convert'; // For decoding JSON
+import 'package:http/http.dart' as http; // For making HTTP requests
 
 //import 'package:fl_chart/fl_chart.dart';
 
@@ -20,7 +21,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final TextEditingController _searchController = TextEditingController();
   String  user='USER';
-  String totalEnergy= '200W';
+  String totalEnergy= '';
 
   String weatherDescription = 'Loading weather...'; 
   String city = 'Nablus'; 
@@ -32,6 +33,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _fetchWeather(); // Fetch weather on initialization
+    _fetchTotalEnergy(); // Fetch total energy on initialization
   }
 
   void _fetchWeather() async {
@@ -49,6 +51,36 @@ class _HomePageState extends State<HomePage> {
       });
     }
   }
+
+  void _fetchTotalEnergy() async {
+  const url = 'http://localhost:3000/totalEnergy'; // Replace with your actual backend URL
+
+  try {
+    final response = await http.get(Uri.parse(url)); // Ensure you import `package:http/http.dart` as http.
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      if (data['success'] == true) {
+        setState(() {
+          totalEnergy = "${data['message']}W"; // Update `totalEnergy` with the backend response
+          //print(totalEnergy);
+        });
+      } else {
+        setState(() {
+          totalEnergy = 'Error fetching energy';
+        });
+      }
+    } else {
+      setState(() {
+        totalEnergy = 'Error: ${response.statusCode}';
+      });
+    }
+  } catch (e) {
+    setState(() {
+      totalEnergy = 'Failed to connect to server';
+    });
+  }
+   }
 
 
 
