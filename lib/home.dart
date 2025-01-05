@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'weather.dart';
 import 'dart:convert'; // For decoding JSON
 import 'package:http/http.dart' as http; // For making HTTP requests
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 //import 'package:fl_chart/fl_chart.dart';
 
@@ -20,6 +21,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final TextEditingController _searchController = TextEditingController();
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   String  user='USER';
   String totalEnergy= '';
 
@@ -29,13 +31,51 @@ class _HomePageState extends State<HomePage> {
 
  // static const bool kIsWeb = bool.fromEnvironment('dart.library.js_util');
 
+   // New variables for notification management
+  List<String> notifications = [];  // List to store notifications
+  int unreadCount = 0;  // Number of unread notifications
+  late IO.Socket socket;  // Socket connection
+
  @override
   void initState() {
     super.initState();
     _fetchWeather(); // Fetch weather on initialization
     _fetchTotalEnergy(); // Fetch total energy on initialization
+    _connectSocket();  // Set up the socket connection to listen for notifications
   }
 
+  // Connect to the Socket.io server
+  void _connectSocket() {
+    socket = IO.io('http://localhost:3000', <String, dynamic>{
+      'transports': ['websocket'],
+      'autoConnect': true,
+    });
+
+  socket.connect();
+
+    // Listen for the 'welcome' event and handle the received message
+    socket.on('welcome', (data) {
+      print("Received data: $data"); // For debugging
+
+      // Assuming 'data' is the message from the server
+      if (data != null) {
+        setState(() {
+          notifications.add(data);  // Add the message to the notifications list
+          unreadCount++;  // Increment unread count
+        });
+      }
+    });
+
+    socket.on('errorDetected', (data) {
+      // Handle the incoming error notification
+      setState(() {
+        notifications.add(data['message']);
+        unreadCount++;
+      });
+    });
+  }
+
+  // Fetch weather data
   void _fetchWeather() async {
     try {
 
@@ -80,48 +120,109 @@ class _HomePageState extends State<HomePage> {
       totalEnergy = 'Failed to connect to server';
     });
   }
-   }
+ }
 
+ void _showNotificationsDialog() {
+   print('Using context: ${navigatorKey.currentContext}');
+  showDialog(
+    context: navigatorKey.currentContext!, // Use the navigatorKey context
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Notifications'),
+        content: SizedBox(
+          height: 200,
+          width: 300,
+          child: ListView.builder(
+            itemCount: notifications.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                title: Text(notifications[index]),
+              );
+            },
+          ),
+        ),
+        actions: [
+          TextButton(
+            child: const Text('Close'),
+            onPressed: () {
+              setState(() {
+                unreadCount = 0; // Mark all notifications as read
+              });
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+ 
+
+  @override
+  void dispose() {
+    super.dispose();
+    socket.dispose();  // Clean up socket connection when widget is disposed
+  }
 
 
   @override
   Widget build(BuildContext context) {
  
     return  MaterialApp(
+      navigatorKey: navigatorKey,
       home:Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 29, 63, 90),
-        leading: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Image.asset(
-            'assets/images/logo.png', 
-            fit: BoxFit.contain,
+       appBar: AppBar(
+          backgroundColor: Color.fromARGB(255, 29, 63, 90),
+          leading: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Image.asset(
+              'assets/images/logo.png',
+              fit: BoxFit.contain,
+            ),
           ),
+          title: TextField(
+            controller: _searchController,
+            decoration: const InputDecoration(
+              hintText: 'Search...',
+              hintStyle: TextStyle(color: Colors.white54),
+              border: InputBorder.none,
+            ),
+            style: const TextStyle(color: Colors.white),
+            onSubmitted: (value) {
+              print('Search query: $value');
+            },
+          ),
+          actions: [
+            IconButton(
+              icon: Stack(
+                children: [
+                  Icon(Icons.notifications, color: Colors.white),
+                  if (unreadCount > 0)
+                    Positioned(
+                      top: 0,
+                      right: 0,
+                      child: CircleAvatar(
+                        radius: 10,
+                        backgroundColor: Colors.red,
+                        child: Text(
+                          unreadCount.toString(),
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    )
+                ],
+              ),
+              onPressed: () {
+                _showNotificationsDialog();
+              },
+            ),
+          ],
         ),
-         title: TextField(
-    controller: _searchController,
-    decoration: const InputDecoration(
-      hintText: 'Search...',
-      hintStyle: TextStyle(color: Colors.white54),
-      border: InputBorder.none,
-    ),
-    style: const TextStyle(color: Colors.white),
-    onSubmitted: (value) {
-      // Handle search logic
-      print('Search query: $value');
-    },
-  ),
-  actions: [
-    IconButton(
-      icon: const Icon(Icons.search, color: Colors.white),
-      onPressed: () {
-        // Handle search icon press
-        print('Search query: ${_searchController.text}');
-      },
-    ),
-  ],
-
-      ),
+        
 
       body:  SingleChildScrollView( // To allow scrolling when there are multiple widgets
             child: Column(
@@ -235,6 +336,12 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
+
+
+
+  
+
+
 class SalesData {
   SalesData(this.year, this.sales);
   final String year;
