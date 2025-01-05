@@ -54,10 +54,11 @@ class _HomePageState extends State<HomePage> {
   socket.connect();
 
     // Listen for the 'welcome' event and handle the received message
-    socket.on('welcome', (data) {
-      print("Received data: $data"); // For debugging
+  socket.on('welcome', (data) {
 
-      // Assuming 'data' is the message from the server
+      print("Received data: $data"); //debugging
+
+      //data' is the message from the server
       if (data != null) {
         setState(() {
           notifications.add(data);  // Add the message to the notifications list
@@ -66,7 +67,7 @@ class _HomePageState extends State<HomePage> {
       }
     });
 
-    socket.on('errorDetected', (data) {
+  socket.on('errorDetected', (data) {
       // Handle the incoming error notification
       setState(() {
         notifications.add(data['message']);
