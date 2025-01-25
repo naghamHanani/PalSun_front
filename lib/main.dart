@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'home.dart';
+import 'screens/home.dart';
 // void main() {
 //   runApp(const MyApp());
 // }
@@ -72,7 +72,7 @@ class _MyAppState extends State<MyApp> {
         "password": _password});
 
         print('Email: $_email, Password: $_password');
-        print('Response status: ${response.statusCode}');
+        ('Response status: ${response.statusCode}');
         print('Response body: ${response.body}');
 
         // Decode the JSON response
