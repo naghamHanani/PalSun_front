@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:test_back/data/consumption_data.dart';
-import 'package:test_back/widgets/custom_card_widget.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
 class Scheduled extends StatelessWidget {
@@ -32,14 +31,14 @@ class Scheduled extends StatelessWidget {
             lineWidth: 13.0,
             animation: true,
             percent: 0.7,
-            center: new Text(
+            center: Text(
                "70.0%",
                 style:
                   TextStyle(fontWeight: FontWeight.normal, fontSize: 14.0),
                   ),
             footer: Padding(
               padding: const EdgeInsets.only(top :10.0),
-              child: new Text(
+              child: Text(
                    "Autarky Rate",
                      style:
                       TextStyle(fontWeight: FontWeight.normal, fontSize: 12.0),
@@ -60,14 +59,14 @@ class Scheduled extends StatelessWidget {
             lineWidth: 13.0,
             animation: true,
             percent: 0.7,
-            center: new Text(
+            center: Text(
                "70.0%",
                 style:
                   TextStyle(fontWeight: FontWeight.normal, fontSize: 14.0),
                   ),
             footer: Padding(
               padding: const EdgeInsets.only(top :10.0),
-              child: new Text(
+              child: Text(
                    "Self supply",
                      style:
                       TextStyle(fontWeight: FontWeight.normal, fontSize: 12.0),

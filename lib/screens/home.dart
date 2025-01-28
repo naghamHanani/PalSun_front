@@ -2,12 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:test_back/const/constant.dart';
 import 'package:test_back/mainDash.dart';
-import 'package:test_back/screens/dashboard.dart';
 import 'package:test_back/screens/devices.dart';
 import 'package:test_back/screens/plants.dart';
 import 'package:test_back/screens/reports.dart';
-import 'package:test_back/screens/subPlants.dart';
-import 'package:test_back/widgets/custom_card_widget.dart';
 import '../data/weather.dart';
 import 'dart:convert'; 
 import 'package:http/http.dart' as http; 
@@ -71,20 +68,28 @@ class _HomePageState extends State<HomePage> {
   socket.on('welcome', (data) {
     print("Received data: $data"); //debugging
     //data' is the message from the server
-      if (data != null) {
-        setState(() {
-          notifications.add(data);  // Add the message to the notifications list
-          unreadCount++;  // Increment unread count
-        });
-      }
+     if (data is String) {
+      // Handle string data
+      setState(() {
+        notifications.add(data); // Add the message to notifications
+        unreadCount++; // Increment unread count
+      });
+    } else {
+      print("Unexpected data type for 'welcome': ${data.runtimeType}");
+    }
   });
   
   socket.on('errorDetected', (data) {
-      // Handle the incoming error notification
+     print("Error detected: $data"); // Debugging
+    if (data is Map<String, dynamic> && data.containsKey('message')) {
+      // Ensure data has the expected structure
       setState(() {
         notifications.add(data['message']);
         unreadCount++;
       });
+    } else {
+      print("Unexpected data type or structure for 'errorDetected': ${data.runtimeType}");
+    }
     });
   }
 
@@ -370,6 +375,26 @@ class _HomePageState extends State<HomePage> {
               },
             ),
 
+            ListTile(
+              leading: Icon(Icons.electrical_services,color:darkThemeBG),
+              title: Text(
+               'Devices',
+               style: GoogleFonts.montserrat(
+               textStyle: TextStyle(
+                color: Color.fromARGB(255, 29, 63, 90),
+                fontWeight: FontWeight.w500,
+                fontSize: 16,
+              ),
+               ), ),
+              onTap: () {
+                // Navigate to Link 3
+                navigatorKey.currentState?.push(
+                 MaterialPageRoute(builder: (context) => Devices(
+                  
+                 )),
+                 ); // Close the drawer
+              },
+            ),
             // ListTile(
             //   leading: Icon(Icons.link),
             //   title: Text(
@@ -522,67 +547,129 @@ class _HomePageState extends State<HomePage> {
 
             Padding(
               padding: const EdgeInsets.only(right:40.0),
-              child: Row(
+              child:Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  
-                   SizedBox(
-                      width:900,
-                      height:300,
-                     child: Container(
-                      color: const Color.fromARGB(255, 6, 70, 121),
-                        
-                       child: Padding(
-                         padding: const EdgeInsets.all(10.0),
-                         child: Text(
-                                       '          Get updated on ypur plants performance',
-                                       style: GoogleFonts.montserrat(
+                  SizedBox(
+                    width:900,
+                    height:300,
+                    child: Container(
+                    color:_selectedTheme? const Color.fromARGB(255, 6, 70, 121): const Color.fromARGB(255, 119, 176, 222),
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                         Expanded(
+                          child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                          // Title
+                         Text(
+                         ' See reports on important data ',
+                         style: GoogleFonts.montserrat(
                           textStyle: TextStyle(
-                            
-                            color: Color.fromARGB(255, 243, 239, 239),
-                            fontWeight: FontWeight.w500,
-                            fontSize: 24.0,
-                          )
-                                       )
-                                     ),
-                       ),
-                     ),
-                   )
-                   ],
+                          color: _selectedTheme? Color.fromARGB(255, 243, 239, 239): darkThemeBG,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 24.0,
+                            ),),
+                          ),
+                  
+                          SizedBox(height: 30), // Space between title and paragraph
+                          // Paragraph
+                           Text(
+                           'Get daily, weekly, monthly and yearly reports on your plants’ performance with real-time data. '
+                           'See how they perform, how much they produce and consume through out different time periods, '
+                           'And get those reports printed in a pdf format!.',
+                            style: GoogleFonts.montserrat(
+                            textStyle: TextStyle(
+                             color: _selectedTheme? Color.fromARGB(255, 243, 239, 239): darkThemeBG,
+                            fontWeight: FontWeight.normal,
+                            fontSize: 16.0, // Smaller font size for paragraph
+                              ), ),
+                          ),
+                         ],
+                          ),
+                         ),
+                  
+                         SizedBox(width: 20), // Space between text and icon
+                         // Icon section
+                        InkWell(
+  onTap: () {
+    // Navigate to the desired page
+    navigatorKey.currentState?.push(
+                 MaterialPageRoute(builder: (context) => Reports()),
+                );
+  },
+  child: Image.asset(
+    'assets/images/arrow.png', // Path to your image
+    width: 90.0,                // Set the width of the image
+    height: 90.0,               // Set the height of the image
+  ),
+)
+                        ],
+                      ),
+                     ),),),
+                ],
               ),
             ),
            
             SizedBox(height:100),
 
-             Padding(
-              padding: const EdgeInsets.only(right:0.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+          Padding(
+              padding: const EdgeInsets.all(0.0),
+              child:Row(
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  
-                   SizedBox(
-                      
-                     child: Container(
-                      
-                      color: const Color.fromARGB(255, 6, 70, 121),
-                        
-                       child: Padding(
-                         padding: const EdgeInsets.all(10.0),
-                         child: Text(
-                                       '       Abous us',
-                                       style: GoogleFonts.montserrat(
+                  SizedBox(
+                    width:1500,
+                    height:700,
+                    child: Container(
+                    color:_selectedTheme? const Color.fromARGB(255, 6, 70, 121): const Color.fromARGB(255, 119, 176, 222),
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                         Expanded(
+                          child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                          // Title
+                         Text(
+                         ' About us ',
+                         style: GoogleFonts.montserrat(
                           textStyle: TextStyle(
-                            
-                            color: Color.fromARGB(255, 243, 239, 239),
-                            fontWeight: FontWeight.w500,
-                            fontSize: 24.0,
-                          )
-                                       )
-                                     ),
-                       ),
-                     ),
-                   )
-                   ],
+                          color: _selectedTheme? Color.fromARGB(255, 243, 239, 239): darkThemeBG,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 24.0,
+                            ),),
+                          ),
+                  
+                          SizedBox(height: 30), // Space between title and paragraph
+                          // Paragraph
+                           Text(
+                           'Get daily, weekly, monthly and yearly reports on your plants’ performance with real-time data. '
+                           'See how they perform, how much they produce and consume through out different time periods, '
+                           'And get those reports printed in a pdf format!.',
+                            style: GoogleFonts.montserrat(
+                            textStyle: TextStyle(
+                             color: _selectedTheme? Color.fromARGB(255, 243, 239, 239): darkThemeBG,
+                            fontWeight: FontWeight.normal,
+                            fontSize: 16.0, // Smaller font size for paragraph
+                              ), ),
+                          ),
+                         ],
+                          ),
+                         ),
+                  
+                         SizedBox(width: 20), // Space between text and icon
+                         // Icon section
+                        
+                        ],
+                      ),
+                     ),),),
+                ],
               ),
             ),
         ])
