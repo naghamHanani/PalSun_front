@@ -4,7 +4,9 @@ import 'package:test_back/const/constant.dart';
 import 'package:test_back/mainDash.dart';
 import 'package:test_back/screens/devices.dart';
 import 'package:test_back/screens/plants.dart';
+import 'package:test_back/screens/profile.dart';
 import 'package:test_back/screens/reports.dart';
+import 'package:test_back/screens/users.dart';
 import '../data/weather.dart';
 import 'dart:convert'; 
 import 'package:http/http.dart' as http; 
@@ -306,7 +308,9 @@ class _HomePageState extends State<HomePage> {
             IconButton(
               icon:Icon(Icons.person, color:_selectedTheme? darkThemeBG :Colors.white,opticalSize: 25,),
               onPressed: () {
-                _showNotificationsDialog();
+               navigatorKey.currentState?.push(
+              MaterialPageRoute(builder: (context) => Profile()),
+              );
               },
             ),
 
@@ -323,19 +327,53 @@ class _HomePageState extends State<HomePage> {
           child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: Color.fromARGB(255, 12, 37, 58),
-              ),
-              child: Text(
-                'Menu',
-                style: GoogleFonts.montserrat(
-                   textStyle: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                ), )
-              ),
+DrawerHeader(
+  decoration: BoxDecoration(
+    color: Color.fromARGB(255, 12, 37, 58),
+  ),
+  child: SizedBox(
+    height: 200, // Increase height as needed
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Menu',
+          style: GoogleFonts.montserrat(
+            textStyle: TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
             ),
+          ),
+        ),
+        SizedBox(height: 15), // Increase spacing
+        Container(
+          width: 70, // Set image width
+          height: 50, // Set image height
+          decoration: BoxDecoration(
+            shape: BoxShape.rectangle,
+            image: DecorationImage(
+              image: AssetImage('assets/images/logo.png'), // Replace with your image
+              fit: BoxFit.cover, // Ensures image covers the area properly
+            ),
+          ),
+        ),
+        SizedBox(height: 10),
+        Text(
+          user, // Replace with dynamic username
+          style: GoogleFonts.montserrat(
+            textStyle: TextStyle(
+              color: Colors.white,
+              fontSize: 14,
+            ),
+          ),
+        ),
+      ],
+    ),
+  ),
+),
+
 
             ListTile(
               leading: Icon(Icons.analytics ,color:darkThemeBG),
@@ -452,7 +490,46 @@ class _HomePageState extends State<HomePage> {
                  ); // Close the drawer
               },
             ),
-
+            ListTile(
+              leading: Icon(Icons.person,color:darkThemeBG),
+              title: Text(
+               'Users',
+               style: GoogleFonts.montserrat(
+               textStyle: TextStyle(
+                color: Color.fromARGB(255, 29, 63, 90),
+                fontWeight: FontWeight.w500,
+                fontSize: 16,
+              ),
+               ), ),
+              onTap: () {
+                // Navigate to Link 3
+                navigatorKey.currentState?.push(
+                 MaterialPageRoute(builder: (context) => Users(
+                  
+                 )),
+                 ); // Close the drawer
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.logout_sharp,color:darkThemeBG),
+              title: Text(
+               'Log out',
+               style: GoogleFonts.montserrat(
+               textStyle: TextStyle(
+                color: Color.fromARGB(255, 29, 63, 90),
+                fontWeight: FontWeight.w500,
+                fontSize: 16,
+              ),
+               ), ),
+              onTap: () {
+                // Navigate to Link 3
+                navigatorKey.currentState?.push(
+                 MaterialPageRoute(builder: (context) => Users(
+                  
+                 )),
+                 ); // Close the drawer
+              },
+            ),
           ],
         ),
       ),
@@ -616,14 +693,14 @@ class _HomePageState extends State<HomePage> {
            
             SizedBox(height:100),
 
-          Padding(
-              padding: const EdgeInsets.all(0.0),
+            Padding(
+              padding: const EdgeInsets.only(left:40.0),
               child:Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   SizedBox(
-                    width:1500,
-                    height:700,
+                    width:900,
+                    height:300,
                     child: Container(
                     color:_selectedTheme? const Color.fromARGB(255, 6, 70, 121): const Color.fromARGB(255, 119, 176, 222),
                     child: Padding(
@@ -637,7 +714,7 @@ class _HomePageState extends State<HomePage> {
                           children: [
                           // Title
                          Text(
-                         ' About us ',
+                         ' See your plants and their data ',
                          style: GoogleFonts.montserrat(
                           textStyle: TextStyle(
                           color: _selectedTheme? Color.fromARGB(255, 243, 239, 239): darkThemeBG,
@@ -649,9 +726,8 @@ class _HomePageState extends State<HomePage> {
                           SizedBox(height: 30), // Space between title and paragraph
                           // Paragraph
                            Text(
-                           'Get daily, weekly, monthly and yearly reports on your plants’ performance with real-time data. '
-                           'See how they perform, how much they produce and consume through out different time periods, '
-                           'And get those reports printed in a pdf format!.',
+                           'Checkout all the data monitored on all of your plants '
+                           'And search for any plant you want!.',
                             style: GoogleFonts.montserrat(
                             textStyle: TextStyle(
                              color: _selectedTheme? Color.fromARGB(255, 243, 239, 239): darkThemeBG,
@@ -665,13 +741,288 @@ class _HomePageState extends State<HomePage> {
                   
                          SizedBox(width: 20), // Space between text and icon
                          // Icon section
-                        
+                        InkWell(
+  onTap: () {
+    // Navigate to the desired page
+    navigatorKey.currentState?.push(
+                 MaterialPageRoute(builder: (context) => Plants()),
+                );
+  },
+  child: Image.asset(
+    'assets/images/arrow.png', // Path to your image
+    width: 90.0,                // Set the width of the image
+    height: 90.0,               // Set the height of the image
+  ),
+)
                         ],
                       ),
                      ),),),
                 ],
               ),
             ),
+
+
+ SizedBox(height:100),
+            Padding(
+              padding: const EdgeInsets.only(right:40.0),
+              child:Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  SizedBox(
+                    width:900,
+                    height:300,
+                    child: Container(
+                    color:_selectedTheme? const Color.fromARGB(255, 6, 70, 121): const Color.fromARGB(255, 119, 176, 222),
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                         Expanded(
+                          child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                          // Title
+                         Text(
+                         ' See your Devices and their data',
+                         style: GoogleFonts.montserrat(
+                          textStyle: TextStyle(
+                          color: _selectedTheme? Color.fromARGB(255, 243, 239, 239): darkThemeBG,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 24.0,
+                            ),),
+                          ),
+                  
+                          SizedBox(height: 30), // Space between title and paragraph
+                          // Paragraph
+                           Text(
+                            'Checkout all the data monitored on all of your devices '
+                           'And search for any device you want!.',
+                            style: GoogleFonts.montserrat(
+                            textStyle: TextStyle(
+                             color: _selectedTheme? Color.fromARGB(255, 243, 239, 239): darkThemeBG,
+                            fontWeight: FontWeight.normal,
+                            fontSize: 16.0, // Smaller font size for paragraph
+                              ), ),
+                          ),
+                         ],
+                          ),
+                         ),
+                  
+                         SizedBox(width: 20), // Space between text and icon
+                         // Icon section
+                        InkWell(
+  onTap: () {
+    // Navigate to the desired page
+    navigatorKey.currentState?.push(
+                 MaterialPageRoute(builder: (context) => Devices()),
+                );
+  },
+  child: Image.asset(
+    'assets/images/arrow.png', // Path to your image
+    width: 90.0,                // Set the width of the image
+    height: 90.0,               // Set the height of the image
+  ),
+)
+                        ],
+                      ),
+                     ),),),
+                ],
+              ),
+            ),
+
+
+            SizedBox(height:100),
+
+            Padding(
+              padding: const EdgeInsets.only(left:40.0),
+              child:Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width:900,
+                    height:300,
+                    child: Container(
+                    color:_selectedTheme? const Color.fromARGB(255, 6, 70, 121): const Color.fromARGB(255, 119, 176, 222),
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                         Expanded(
+                          child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                          // Title
+                         Text(
+                         ' See the users ',
+                         style: GoogleFonts.montserrat(
+                          textStyle: TextStyle(
+                          color: _selectedTheme? Color.fromARGB(255, 243, 239, 239): darkThemeBG,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 24.0,
+                            ),),
+                          ),
+                  
+                          SizedBox(height: 30), // Space between title and paragraph
+                          // Paragraph
+                           Text(
+                           'Stay updated on the current users  '
+                           'And delete and update their data!.',
+                            style: GoogleFonts.montserrat(
+                            textStyle: TextStyle(
+                             color: _selectedTheme? Color.fromARGB(255, 243, 239, 239): darkThemeBG,
+                            fontWeight: FontWeight.normal,
+                            fontSize: 16.0, // Smaller font size for paragraph
+                              ), ),
+                          ),
+                         ],
+                          ),
+                         ),
+                  
+                         SizedBox(width: 20), // Space between text and icon
+                         // Icon section
+                        InkWell(
+  onTap: () {
+    // Navigate to the desired page
+    navigatorKey.currentState?.push(
+                 MaterialPageRoute(builder: (context) => Users()),
+                );
+  },
+  child: Image.asset(
+    'assets/images/arrow.png', // Path to your image
+    width: 90.0,                // Set the width of the image
+    height: 90.0,               // Set the height of the image
+  ),
+)
+                        ],
+                      ),
+                     ),),),
+                ],
+              ),
+            ),
+
+
+ 
+
+            SizedBox(height:100),
+
+
+          Padding(
+  padding: const EdgeInsets.all(20.0), // Added padding for better spacing
+  child: Container(
+    width: double.infinity,
+    height:400,
+    decoration: BoxDecoration(
+      color: _selectedTheme
+          ? const Color.fromARGB(255, 6, 70, 121)
+          : const Color.fromARGB(255, 119, 176, 222),
+    ),
+    child: Padding(
+      padding: const EdgeInsets.all(20.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start, // Align text to the left
+        children: [
+          // "About Us" Title
+          Text(
+            'About Us',
+            style: GoogleFonts.montserrat(
+              textStyle: TextStyle(
+                color: _selectedTheme
+                    ? Color.fromARGB(255, 243, 239, 239)
+                    : darkThemeBG,
+                fontWeight: FontWeight.bold,
+                fontSize: 24.0,
+              ),
+            ),
+          ),
+
+          SizedBox(height: 10), // Space between title and paragraph
+
+          // "About Us" Paragraph
+          Text(
+            "PalSun is a place where monitoring and keeping up with your plants and devices with a user friendly and an interactive interface,"
+            'with providing error prediction for fauly devices, summarised analystics and daily to yearly reports with the ability to download! '
+            'Get in touch with us for any more information!',
+            style: GoogleFonts.montserrat(
+              textStyle: TextStyle(
+                color: _selectedTheme
+                    ? Color.fromARGB(255, 243, 239, 239)
+                    : darkThemeBG,
+                fontWeight: FontWeight.normal,
+                fontSize: 16.0, // Slightly smaller font
+              ),
+            ),
+          ),
+
+          SizedBox(height: 40), // Space before "Contact Us"
+
+          // "Contact Us" Title
+          Text(
+            'Contact Us',
+            style: GoogleFonts.montserrat(
+              textStyle: TextStyle(
+                color: _selectedTheme
+                    ? Color.fromARGB(255, 243, 239, 239)
+                    : darkThemeBG,
+                fontWeight: FontWeight.bold,
+                fontSize: 20.0,
+              ),
+            ),
+          ),
+
+          SizedBox(height: 10), // Space before contact details
+
+          // Contact Information (Split into Two Columns)
+          Row(
+            children: [
+              // First Column
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Nagham Hnani\nEmail: s12028420@stu.najah.edu',
+                      style: GoogleFonts.montserrat(
+                        textStyle: TextStyle(
+                          color: _selectedTheme
+                              ? Color.fromARGB(255, 243, 239, 239)
+                              : darkThemeBG,
+                          fontSize: 16.0,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Second Column
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Shorooq Sousa\nEmail: s12029069@stu.najah.edu',
+                      style: GoogleFonts.montserrat(
+                        textStyle: TextStyle(
+                          color: _selectedTheme
+                              ? Color.fromARGB(255, 243, 239, 239)
+                              : darkThemeBG,
+                          fontSize: 16.0,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    ),
+  ),
+),
+
         ])
 
       ),

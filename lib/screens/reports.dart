@@ -12,10 +12,8 @@ import 'package:test_back/screens/plants.dart';
 import 'package:test_back/util/responsive.dart';
 import 'package:test_back/widgets/custom_card_widget.dart';
 import '../data/reports_chart_data.dart';
-import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import '../util/pdf_report_api.dart';
-import 'package:intl/intl.dart';
 
 class Reports extends StatefulWidget {
   const Reports({super.key});
